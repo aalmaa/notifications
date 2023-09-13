@@ -1,0 +1,22 @@
+{
+  "name": "notification-client",
+  "version": "1.0.0",
+  "description": "Comunicate with notification server side to recieve notifications",
+  "main": "socketLibrary.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aalmaa/notifications.git"
+  },
+  "keywords": [
+    "notification"
+  ],
+  "author": "Alma Lika",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aalmaa/notifications/issues"
+  },
+  "homepage": "https://github.com/aalmaa/notifications#readme"
+}
