@@ -1,100 +1,80 @@
-const Message = (function () {
-    const socket = io('https://notification-service-uywud3yrcq-og.a.run.app',
+const io = require('socket.io-client');
 
-        {
-            transports: ['websocket', 'polling'],
-            query: {
-                id: 'connection123'
-            },
+class MessageClass {
+    constructor({
+        onSubscribed,
+        onNewNotification,
+        onConnected,
+        onDisconnected,
+    } = {}) {
+        this._initSocket({ onConnected, onDisconnected });
+
+        this.socket.on('subscribed', onSubscribed);
+        this.socket.on('new-notification', onNewNotification);
+    }
+
+    // Private method, not accessible from outside
+    _initSocket({ onConnected, onDisconnected }) {
+        this.socket = io('http://localhost:9000',
+            {
+                transports: ['websocket', 'polling'],
+                query: {
+                    id: 'connection123'
+                },
+            }
+        );
+
+        this.socket.on('connect', () => {
+            this.isConnected = true;
+            onConnected?.();
         });
 
-    let isConnected = false;
-
-    socket.on('connect', function () {
-        isConnected = true;
-        // console.log('Connected with socket.io!');
-    });
-
-    socket.on('disconnect', function () {
-        isConnected = false;
-        // console.log('Disconnected from socket.io!');
-    });
-
-    function connect() {
-        return new Promise((resolve, reject) => {
-            if (isConnected) {
-                resolve('Already connected');
-            } else {
-                socket.connect();
-                socket.on('connect', () => {
-                    isConnected = true;
-                    resolve('Connected');
-                });
-            }
+        this.socket.on('disconnect', () => {
+            this.isConnected = false;
+            onDisconnected?.();
         });
     }
 
-    function disconnect() {
+    connect() {
+        if (this.isConnected) return this;
+
+        this.socket.connect();
+        return this;
+    }
+
+    disconnect() {
         return new Promise((resolve, reject) => {
-            if (!isConnected) {
+            if (!this.isConnected) {
                 resolve('Already disconnected');
             } else {
-                socket.disconnect();
-                socket.on('disconnect', () => {
-                    isConnected = false;
+                this.socket.disconnect();
+                this.socket.on('disconnect', () => {
+                    this.isConnected = false;
                     resolve('Disconnected');
                 });
             }
         });
     }
 
-    function subscribe(channel) {
-        return new Promise((resolve, reject) => {
-            socket.emit('subscribe', channel);
-            resolve(); // Resolve immediately, assuming subscription was successful
-        });
+    subscribe(channel) {
+        this.socket.emit('subscribe', channel);
+        return this;
     }
 
-    function subscribed() {
-        return new Promise((resolve, reject) => {
-            socket.on('subscribed', function (data) {
-                resolve(data); // Resolve with data
-            });
-        });
+    deleteNotification(id) {
+        this.socket.emit('delete-notification', id)
+        return this;
     }
 
-    function deleteNotifications(id) {
-        return new Promise((resolve, reject) => {
-            socket.emit('deleteNotifications', id, function (data) {
-                console.log('Deleted notifications:', data);
-                resolve(data); // Resolve with data
-            });
-        });
+    deleteAllNotifications(data) {
+        this.socket.emit('delete-all-notifications', data);
+        return this;
     }
 
-    function deleteAllNotifications(data) {
-        return new Promise((resolve, reject) => {
-            socket.emit('delete-all-notifications', data, function (data) {
-                resolve(data); // Resolve with data
-            });
-        });
+    updateNotification(data) {
+        this.socket.emit('update-notification', data);
+        return this;
     }
+}
 
-    function newNotification(data) {
-        return new Promise((resolve, reject) => {
-            socket.on('new-notification', function (data) {
-                resolve(data); // Resolve with data
-            });
-        });
-    }
-
-    return {
-        connect,
-        disconnect,
-        subscribe,
-        subscribed,
-        deleteNotifications,
-        newNotification,
-        deleteAllNotifications
-    };
-})();
+module.exports = MessageClass;
