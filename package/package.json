@@ -1,7 +1,7 @@
 {
-  "name": "notification-client",
-  "version": "1.0.0",
-  "description": "Comunicate with notification server side to recieve notifications",
+  "name": "notifications-service-client",
+  "version": "1.1.8",
+  "description": "Communicate with notification server side to receive notifications",
   "main": "socketLibrary.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/aalmaa/notifications/issues"
   },
-  "homepage": "https://github.com/aalmaa/notifications#readme"
+  "homepage": "https://github.com/aalmaa/notifications#readme",
+  "dependencies": {
+    "socket.io-client": "^4.7.5"
+  }
 }

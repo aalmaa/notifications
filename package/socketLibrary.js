@@ -2,27 +2,36 @@ const io = require('socket.io-client');
 
 class MessageClass {
     constructor({
+        init = {
+            url: '',
+        },
         onSubscribed,
         onNewNotification,
         onConnected,
         onDisconnected,
     } = {}) {
-        this._initSocket({ onConnected, onDisconnected });
+        this._initSocket({ onConnected, onDisconnected, init });
 
         this.socket.on('subscribed', onSubscribed);
         this.socket.on('new-notification', onNewNotification);
     }
 
     // Private method, not accessible from outside
-    _initSocket({ onConnected, onDisconnected }) {
-        this.socket = io('http://localhost:9000',
-            {
-                transports: ['websocket', 'polling'],
-                query: {
-                    id: 'connection123'
-                },
-            }
-        );
+    _initSocket({ onConnected, onDisconnected, init }) {
+        try {
+            if (!init.url) throw new Error('URL is missing');
+            const { url } = init;
+            this.socket = io(url,
+                {
+                    transports: ['websocket', 'polling'],
+                    query: {
+                        id: 'connection123'
+                    },
+                }
+            );
+        } catch (e) {
+            throw new Error(e);
+        }
 
         this.socket.on('connect', () => {
             this.isConnected = true;
