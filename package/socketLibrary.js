@@ -9,11 +9,13 @@ class MessageClass {
         onNewNotification,
         onConnected,
         onDisconnected,
+        onLoadedMoreNotifications,
     } = {}) {
         this._initSocket({ onConnected, onDisconnected, init });
 
         this.socket.on('subscribed', onSubscribed);
         this.socket.on('new-notification', onNewNotification);
+        this.socket.on('loaded-more-notifications', onLoadedMoreNotifications);
     }
 
     // Private method, not accessible from outside
@@ -82,6 +84,11 @@ class MessageClass {
 
     updateNotification(data) {
         this.socket.emit('update-notification', data);
+        return this;
+    }
+
+    loadMoreNotifications(data) {
+        this.socket.emit('load-more-notifications', data);
         return this;
     }
 }

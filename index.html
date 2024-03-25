@@ -26,6 +26,10 @@
             const onDisconnected = (data) => {
                 console.log("onDisconnected ", data)
             }
+            const onLoadedMoreNotifications = (data) => {
+                console.log("onLoadedMoreNotifications ", data)
+            }
+
 
             const init = {
                 url: 'http://localhost:9000',
@@ -37,9 +41,11 @@
                 onNewNotification,
                 onConnected,
                 onDisconnected,
+                onLoadedMoreNotifications
             })
 
-            instance.connect().subscribe('sami')
+            instance.connect().subscribe({ room: 'al-ma' })
+            instance.loadMoreNotifications({ room: 'al-ma', startIndex: 1 })
         })();
     </script>
 
