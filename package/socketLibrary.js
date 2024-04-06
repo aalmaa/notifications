@@ -4,7 +4,10 @@ class MessageClass {
     constructor({
         init = {
             url: '',
+            token: '',
+            query: {}
         },
+
         onSubscribed,
         onNewNotification,
         onConnected,
@@ -21,14 +24,18 @@ class MessageClass {
     // Private method, not accessible from outside
     _initSocket({ onConnected, onDisconnected, init }) {
         try {
-            if (!init.url) throw new Error('URL is missing');
-            const { url } = init;
+            if (!init.url) throw new Error('URL is required');
+            if (!init.token) throw new Error('Token is required');
+            const { url, token, query } = init;
             this.socket = io(url,
                 {
                     transports: ['websocket', 'polling'],
-                    query: {
-                        id: 'connection123'
+                    auth: {
+                        token
                     },
+                    query: {
+                        ...query
+                    }
                 }
             );
         } catch (e) {
